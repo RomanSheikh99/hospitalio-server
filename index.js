@@ -113,6 +113,13 @@ async function run() {
       res.json(result);
      });
     
+     // GET Appointment
+    app.get('/getAppointment', async (req, res) => {
+      const appointment = appointmentCollection.find({}).toArray();
+      console.log(appointment);
+      res.send(appointment);
+    });
+    
     //get my Appointment
     app.get('/appointment/:email', async (req, res) => {
       const result = await appointmentCollection.find({ userId: req.params.email }).toArray();
