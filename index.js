@@ -115,8 +115,7 @@ async function run() {
     
      // GET Appointment
     app.get('/getAppointment', async (req, res) => {
-      const appointment = appointmentCollection.find({}).toArray();
-      console.log(appointment);
+      const appointment = await appointmentCollection.find({}).toArray();
       res.send(appointment);
     });
     
