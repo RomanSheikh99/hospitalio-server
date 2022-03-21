@@ -131,6 +131,21 @@ async function run() {
       const result = await appointmentCollection.deleteOne({ _id: ObjectId(id) });
       res.send(result);
     });
+
+    //Update Appointment
+    app.put('/updateAppointment/:id', async (req, res) => {
+      const id = req.params.id;
+      const updatedStatus = req.body;
+      const filter = { _id: ObjectId(id)};
+      appointmentCollection.updateOne(filter, {
+          $set: {
+            status: updatedStatus.status,
+          },
+        })
+        .then(result => {
+          res.send(result);
+        });
+    });
     
     
     // ======================== Appointment Section End =====================
