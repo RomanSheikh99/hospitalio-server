@@ -27,6 +27,7 @@ async function run() {
     const serviceCollection = database.collection('service');
     const doctorCollection = database.collection('doctor');
     const cardCollection = database.collection('card');
+    const appointmentCollection = database.collection('appointment');
     const reviewCollection = database.collection('review');
     const adminCollection = database.collection('admin');
 
@@ -103,6 +104,31 @@ async function run() {
     
     // ======================== Card Section End =====================
 
+  // ================= Appointment Section Start ========================
+    
+     //add to Appointment
+     app.post('/addAppointment', async (req, res) => {
+      const service = req.body;
+      const result = await appointmentCollection.insertOne(service);
+      res.json(result);
+     });
+    
+    //get my Appointment
+    app.get('/appointment/:email', async (req, res) => {
+      const result = await appointmentCollection.find({ userId: req.params.email }).toArray();
+      res.send(result);
+    });
+
+    //delete Appointment
+    app.delete('/deleteAppointment/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await appointmentCollection.deleteOne({ _id: ObjectId(id) });
+      res.send(result);
+    });
+    
+    
+    // ======================== Appointment Section End =====================
+
     // ================ Review Section Start =========================
 
     // add review
@@ -114,7 +140,7 @@ async function run() {
     
     //get doctor review
     app.get('/review/:id', async (req, res) => {
-      const result = await reviewCollection.filter({ doctorID: req.params.id }).toArray();
+      const result = await reviewCollection.find({ doctorId: req.params.id }).toArray();
       res.send(result);
     });
 
