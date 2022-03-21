@@ -23,19 +23,99 @@ app.use(express.json());
 async function run() {
   try {
     await client.connect();
-    const database = client.db('medicine');
-    const ProductsCollection = database.collection('product');
-    const bookingCollection = database.collection('booking');
+    const database = client.db('hospitalio');
+    const serviceCollection = database.collection('service');
+    const doctorCollection = database.collection('doctor');
+    const cardCollection = database.collection('card');
     const reviewCollection = database.collection('review');
     const adminCollection = database.collection('admin');
 
-    //add product
-    app.post('/addProduct', async (req, res) => {
-      const product = req.body;
-      const result = await ProductsCollection.insertOne(product);
+    // ==========================Service Section Start======================
+    //add service
+    app.post('/addService', async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
       res.json(result);
     });
 
+    // GET service
+    app.get('/service', async (req, res) => {
+      const cursor = serviceCollection.find({});
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+
+    //get single service
+    app.get('/service/:id', async (req, res) => {
+      const result = await serviceCollection.find({ _id: ObjectId(req.params.id) }).toArray();
+      res.send(result);
+    });
+
+    // =====================Service Section End=================================
+
+// ==================Doctor Section Start=========================
+    
+    //add doctor
+    app.post('/addDoctor', async (req, res) => {
+      const doctor = req.body;
+      const result = await doctorCollection.insertOne(doctor);
+      res.json(result);
+    });
+
+    // GET doctor
+    app.get('/doctor', async (req, res) => {
+      const cursor = doctorCollection.find({});
+      const doctors = await cursor.toArray();
+      res.send(doctors);
+    });
+
+    //get single doctor
+    app.get('/doctor/:id', async (req, res) => {
+      const result = await doctorCollection.find({ _id: ObjectId(req.params.id) }).toArray();
+      console.log(result);
+      res.send(result);
+    });
+
+  // ========================Doctor Section End=========================================
+    
+    
+  // ================= Card Section Start ========================
+    
+     //add to card
+     app.post('/addCard', async (req, res) => {
+      const service = req.body;
+      const result = await cardCollection.insertOne(service);
+      res.json(result);
+     });
+    
+    //get my card
+    app.get('/card/:email', async (req, res) => {
+      const result = await cardCollection.find({ userId: req.params.email }).toArray();
+      res.send(result);
+    });
+    
+    
+    // ======================== Card Section End =====================
+
+    // ================ Review Section Start =========================
+
+    // add review
+    app.post('/giveReview', async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.json(result);
+    });
+    
+    //get doctor review
+    app.get('/review/:id', async (req, res) => {
+      const result = await reviewCollection.filter({ doctorID: req.params.id }).toArray();
+      res.send(result);
+    });
+
+
+    // ================ Review Section End =========================
+
+    // ================== Admin Section Start ==========================
 
     //Make Admin
     app.post('/makeAdmin', async (req, res) => {
@@ -44,99 +124,25 @@ async function run() {
       res.json(result);
     });
 
-    // add review
-    app.post('/getReview', async (req, res) => {
-      const review = req.body;
-      const result = await reviewCollection.insertOne(review);
-      res.json(result);
-    });
-
-    // GET product
-    app.get('/products', async (req, res) => {
-      const cursor = ProductsCollection.find({});
-      const products = await cursor.toArray();
-      res.send(products);
-    });
-
     // GET Admin
-    app.get('/admins', async (req, res) => {
+    app.get('/admin', async (req, res) => {
       const cursor = adminCollection.find({});
       const admins = await cursor.toArray();
       res.send(admins);
     });
 
-    //Get Reviews
-    app.get('/reviews', async (req, res) => {
-      const cursor = reviewCollection.find({});
-      const reviews = await cursor.toArray();
-      res.send(reviews);
-    });
+    // ================ Admin Section End===============================
 
-    // add booking products
-    app.post('/bookingProduct', async (req, res) => {
-      const bookingProduct = req.body;
-      const result = await bookingCollection.insertOne(bookingProduct);
-
-      res.send(result);
-      console.log(result);
-    });
-
-    //get my booking items
-    app.get('/myBooking/:email', async (req, res) => {
-      const result = await bookingCollection
-        .find({ email: req.params.email })
-        .toArray();
-      res.send(result);
-    });
-
-    //get all booking items
-    app.get('/allBooking', async (req, res) => {
-      const result = await bookingCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    //delete booking product
-    app.delete('/deleteBooking/:id', async (req, res) => {
-      const id = req.params.id;
-      const result = await bookingCollection.deleteOne({ _id: id });
-      res.send(result);
-    });
-
-
-    //delete product
-    app.delete('/deleteProduct/:id', async (req, res) => {
-      const id = req.params.id;
-      const result = await ProductsCollection.deleteOne({ _id: ObjectId(id) });
-      res.send(result);
-    });
-
-    //Shipped product
-    app.put('/update/:id', async (req, res) => {
-      const id = req.params.id;
-      const updatedStatus = req.body;
-      console.log(id);
-      const filter = { _id: id };
-
-      bookingCollection
-        .updateOne(filter, {
-          $set: {
-            status: updatedStatus.status,
-          },
-        })
-        .then(result => {
-          res.send(result);
-          console.log(result);
-        });
-    });
+  
   } finally {
     // await client.close();
   }
-}
+};
 
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-  res.send('Sunglass server is Runinggggg!');
+  res.send('hospitalio server is Runinggggg!');
 });
 
 app.listen(port, () => {
