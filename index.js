@@ -72,7 +72,6 @@ async function run() {
     //get single doctor
     app.get('/doctor/:id', async (req, res) => {
       const result = await doctorCollection.find({ _id: ObjectId(req.params.id) }).toArray();
-      console.log(result);
       res.send(result);
     });
 
@@ -91,6 +90,13 @@ async function run() {
     //get my card
     app.get('/card/:email', async (req, res) => {
       const result = await cardCollection.find({ userId: req.params.email }).toArray();
+      res.send(result);
+    });
+
+    //delete card
+    app.delete('/deleteCard/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await cardCollection.deleteOne({ _id: ObjectId(id) });
       res.send(result);
     });
     
